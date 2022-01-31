@@ -1127,6 +1127,10 @@ where
 		Option<<T as frame_system::Config>::AccountId>,
 	>,
 {
+	fn weight() -> u64 {
+		0
+	}
+
 	fn on_offence(
 		offenders: &[OffenceDetails<
 			T::AccountId,

@@ -17,8 +17,6 @@
 
 //! Mock file for offences benchmarking.
 
-#![cfg(test)]
-
 use super::*;
 use frame_election_provider_support::onchain;
 use frame_support::{
@@ -29,7 +27,7 @@ use frame_support::{
 use frame_system as system;
 use pallet_session::historical as pallet_session_historical;
 use sp_runtime::{
-	testing::{Header, UintAuthorityId},
+	testing::{Header, UintAuthorityId, TestXt},
 	traits::IdentityLookup,
 };
 
@@ -53,10 +51,10 @@ impl frame_system::Config for Test {
 	type BlockNumber = BlockNumber;
 	type Call = Call;
 	type Hash = sp_core::H256;
-	type Hashing = ::sp_runtime::traits::BlakeTwo256;
+	type Hashing = sp_runtime::traits::BlakeTwo256;
 	type AccountId = AccountId;
 	type Lookup = IdentityLookup<Self::AccountId>;
-	type Header = sp_runtime::testing::Header;
+	type Header = Header;
 	type Event = Event;
 	type BlockHashCount = ();
 	type Version = ();
@@ -193,24 +191,24 @@ impl pallet_im_online::Config for Test {
 	type MaxPeerDataEncodingSize = ConstU32<1_000>;
 }
 
-impl pallet_offences::Config for Test {
+use crate::weights::WeightInfo;
+impl crate::Config for Test {
 	type Event = Event;
 	type IdentificationTuple = pallet_session::historical::IdentificationTuple<Self>;
-	type OnOffenceHandler = Staking;
+	type OnOffenceHandler = (); // Use the NO-OP hook for benchmarking.
+	type WeightInfo = ();
 }
 
-impl<T> frame_system::offchain::SendTransactionTypes<T> for Test
+impl<C> frame_system::offchain::SendTransactionTypes<C> for Test
 where
-	Call: From<T>,
+	Call: From<C>,
 {
-	type Extrinsic = Extrinsic;
 	type OverarchingCall = Call;
+	type Extrinsic = TestXt<Call, ()>;
 }
 
-impl crate::Config for Test {}
-
-pub type Block = sp_runtime::generic::Block<Header, UncheckedExtrinsic>;
-pub type UncheckedExtrinsic = sp_runtime::generic::UncheckedExtrinsic<u32, Call, u64, ()>;
+type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
+type Block = frame_system::mocking::MockBlock<Test>;
 
 frame_support::construct_runtime!(
 	pub enum Test where
@@ -223,7 +221,7 @@ frame_support::construct_runtime!(
 		Staking: pallet_staking::{Pallet, Call, Config<T>, Storage, Event<T>},
 		Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>},
 		ImOnline: pallet_im_online::{Pallet, Call, Storage, Event<T>, ValidateUnsigned, Config<T>},
-		Offences: pallet_offences::{Pallet, Storage, Event},
+		Offences: crate::{Pallet, Storage, Event},
 		Historical: pallet_session_historical::{Pallet},
 	}
 );

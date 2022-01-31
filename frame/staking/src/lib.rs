@@ -817,6 +817,11 @@ where
 	R: ReportOffence<Reporter, Offender, O>,
 	O: Offence<Offender>,
 {
+	fn report_offence_weight(n: u32) -> u64 {
+		//T::OnOffenceHandler::weight() + T::WeightInfo::report_offence_without_hook(n)
+		Default::default()
+	}
+
 	fn report_offence(reporters: Vec<Reporter>, offence: O) -> Result<(), OffenceError> {
 		// Disallow any slashing from before the current bonding period.
 		let offence_session = offence.session_index();

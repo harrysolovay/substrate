@@ -22,9 +22,16 @@
 // Ensure we're `no_std` when compiling for Wasm.
 #![cfg_attr(not(feature = "std"), no_std)]
 
-pub mod migration;
+#[cfg(feature = "runtime-benchmarks")]
+pub mod benchmarking;
+#[cfg(test)]
+mod bench_mock;
+#[cfg(test)]
 mod mock;
+#[cfg(test)]
 mod tests;
+pub mod weights;
+pub mod migration;
 
 use codec::{Decode, Encode};
 use frame_support::weights::Weight;
@@ -36,6 +43,7 @@ use sp_staking::{
 use sp_std::prelude::*;
 
 pub use pallet::*;
+pub use weights::WeightInfo;
 
 /// A binary blob which represents a SCALE codec-encoded `O::TimeSlot`.
 type OpaqueTimeSlot = Vec<u8>;
@@ -62,6 +70,8 @@ pub mod pallet {
 		type IdentificationTuple: Parameter + Ord;
 		/// A handler called for every offence report.
 		type OnOffenceHandler: OnOffenceHandler<Self::AccountId, Self::IdentificationTuple, Weight>;
+		// Weight information for extrinsics in this pallet.
+		type WeightInfo: WeightInfo;
 	}
 
 	/// The primary structure that holds all offence records keyed by report identifiers.
@@ -117,6 +127,11 @@ impl<T: Config, O: Offence<T::IdentificationTuple>>
 where
 	T::IdentificationTuple: Clone,
 {
+	fn report_offence_weight(n: u32) -> u64 {
+		//T::OnOffenceHandler::weight() + T::WeightInfo::report_offence_without_hook(n)
+		Default::default()
+	}
+
 	fn report_offence(reporters: Vec<T::AccountId>, offence: O) -> Result<(), OffenceError> {
 		let offenders = offence.offenders();
 		let time_slot = offence.time_slot();

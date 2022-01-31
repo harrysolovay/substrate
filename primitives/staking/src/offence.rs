@@ -140,6 +140,8 @@ impl sp_runtime::traits::Printable for OffenceError {
 
 /// A trait for decoupling offence reporters from the actual handling of offence reports.
 pub trait ReportOffence<Reporter, Offender, O: Offence<Offender>> {
+	fn report_offence_weight(n_reporters: u32) -> u64;
+
 	/// Report an `offence` and reward given `reporters`.
 	fn report_offence(reporters: Vec<Reporter>, offence: O) -> Result<(), OffenceError>;
 
@@ -150,6 +152,10 @@ pub trait ReportOffence<Reporter, Offender, O: Offence<Offender>> {
 }
 
 impl<Reporter, Offender, O: Offence<Offender>> ReportOffence<Reporter, Offender, O> for () {
+	fn report_offence_weight(n_reporters: u32) -> u64 {
+		Default::default()
+	}
+
 	fn report_offence(_reporters: Vec<Reporter>, _offence: O) -> Result<(), OffenceError> {
 		Ok(())
 	}
@@ -188,6 +194,8 @@ pub trait OnOffenceHandler<Reporter, Offender, Res> {
 		session: SessionIndex,
 		disable_strategy: DisableStrategy,
 	) -> Res;
+
+	fn weight() -> u64;
 }
 
 impl<Reporter, Offender, Res: Default> OnOffenceHandler<Reporter, Offender, Res> for () {
@@ -197,6 +205,10 @@ impl<Reporter, Offender, Res: Default> OnOffenceHandler<Reporter, Offender, Res>
 		_session: SessionIndex,
 		_disable_strategy: DisableStrategy,
 	) -> Res {
+		Default::default()
+	}
+
+	fn weight() -> u64 {
 		Default::default()
 	}
 }
