@@ -38,6 +38,7 @@ pallet-balances = { version = "4.0.0-dev", path = "../balances", default-feature
 frame-election-provider-support = { version = "4.0.0-dev", path = "../election-provider-support", default-features = false, optional = true }
 pallet-staking-reward-curve = { version = "4.0.0-dev", path = "../staking/reward-curve", default-features = false, optional = true }
 pallet-offences = { version = "4.0.0-dev", path = "../offences", default-features = false, optional = true }
+sp-consensus-slots = { version = "0.10.0-dev", path = "../../primitives/consensus/slots", default-features = false, optional = true }
 
 [dev-dependencies]
 pallet-balances = { version = "4.0.0-dev", path = "../balances" }
@@ -69,5 +70,6 @@ std = [
 ]
 runtime-benchmarks = ["frame-benchmarking/runtime-benchmarks",
 "pallet-staking/runtime-benchmarks", "pallet-balances/runtime-benchmarks", "frame-election-provider-support/runtime-benchmarks", "pallet-staking-reward-curve",
-"pallet-offences/runtime-benchmarks", "sp-runtime/runtime-benchmarks",]
+"pallet-offences/runtime-benchmarks", "sp-runtime/runtime-benchmarks",
+"sp-consensus-slots"]
 try-runtime = ["frame-support/try-runtime"]

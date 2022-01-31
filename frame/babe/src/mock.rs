@@ -25,17 +25,16 @@ use frame_support::{
 	traits::{ConstU128, ConstU32, ConstU64, GenesisBuild, KeyOwnerProofSystem, OnInitialize},
 };
 use pallet_session::historical as pallet_session_historical;
-use sp_consensus_babe::{AuthorityId, AuthorityPair, Slot};
+use sp_consensus_babe::{AuthorityId, Slot};
 use sp_consensus_vrf::schnorrkel::{VRFOutput, VRFProof};
 use sp_core::{
-	crypto::{IsWrappedBy, KeyTypeId, Pair},
+	crypto::{IsWrappedBy, KeyTypeId},
 	H256, U256,
 };
 use sp_io;
 use sp_runtime::{
 	curve::PiecewiseLinear,
 	impl_opaque_keys,
-	testing::{Digest, DigestItem, Header, TestXt},
 	traits::{Header as _, IdentityLookup, OpaqueKeys},
 	Perbill,
 };

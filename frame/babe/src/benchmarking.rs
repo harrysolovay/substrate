@@ -40,24 +40,7 @@ use sp_runtime::Digest;
 
 type Header = sp_runtime::generic::Header<u64, sp_runtime::traits::BlakeTwo256>;
 
-benchmarks! {
-	report_equivocation_unsigned_without_hook {
-		//new_test_ext_with_pairs(3);
-
-		//let a: <crate::Pallet::<T> as frame_support::Pallet>::MockConfig;
-	}: {
-		/*Babe::report_equivocation_unsigned(
-			T::Origin::none(),
-			Box::new(eq_proof),
-			key_owner_proof,
-		)
-		.unwrap();*/
-	}
-
-	check_equivocation_proof {
-		let x in 0 .. 1;
-
-		// NOTE: generated with the test below `test_generate_equivocation_report_blob`.
+// NOTE: generated with the test below `test_generate_equivocation_report_blob`.
 		// the output is not deterministic since keys are generated randomly (and therefore
 		// signature content changes). it should not affect the benchmark.
 		// with the current benchmark setup it is not possible to generate this programatically
@@ -85,6 +68,27 @@ benchmarks! {
 			175, 145, 255, 7, 121, 133
 		];
 
+use frame_support::pallet_prelude::IsType;
+benchmarks! {
+	where_clause { where <T as pallet::Config>::KeyOwnerProof: From<pallet_session::historical::MembershipProof> }
+
+	report_equivocation_unsigned_without_hook {
+		let equivocation_proof: sp_consensus_babe::EquivocationProof<T::Header> = Decode::decode(&mut &EQUIVOCATION_PROOF_BLOB[..]).unwrap();
+		let offender = equivocation_proof.offender.clone();
+
+		let key = (sp_consensus_babe::KEY_TYPE, offender);
+		let key_owner_proof = Historical::prove(key).unwrap();
+	}: {
+		Babe::<T>::report_equivocation_unsigned(
+			T::Origin::none(),
+			Box::new(equivocation_proof),
+			key_owner_proof,
+		)
+		.unwrap();
+	}
+
+	check_equivocation_proof {
+		let x in 0 .. 1;
 		let equivocation_proof1: sp_consensus_babe::EquivocationProof<Header> =
 			Decode::decode(&mut &EQUIVOCATION_PROOF_BLOB[..]).unwrap();
 

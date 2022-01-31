@@ -56,7 +56,7 @@ mod randomness;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 //#[cfg(feature = "runtime-benchmarks")]
-//#mod bench_mock;
+//mod bench_mock;
 #[cfg(all(feature = "std", test))]
 mod mock;
 #[cfg(all(feature = "std", test))]
@@ -797,9 +797,12 @@ impl<T: Config> Pallet<T> {
 		let offender = equivocation_proof.offender.clone();
 		let slot = equivocation_proof.slot;
 
-		// validate the equivocation proof
-		if !sp_consensus_babe::check_equivocation_proof(equivocation_proof) {
-			return Err(Error::<T>::InvalidEquivocationProof.into())
+		#[cfg(not(feature = "runtime-benchmarks"))]
+		{
+			// validate the equivocation proof
+			if !sp_consensus_babe::check_equivocation_proof(equivocation_proof) {
+				return Err(Error::<T>::InvalidEquivocationProof.into())
+			}
 		}
 
 		let validator_set_count = key_owner_proof.validator_count();
@@ -816,8 +819,15 @@ impl<T: Config> Pallet<T> {
 
 		// check the membership proof and extract the offender's id
 		let key = (sp_consensus_babe::KEY_TYPE, offender);
-		let offender = T::KeyOwnerProofSystem::check_proof(key, key_owner_proof)
-			.ok_or(Error::<T>::InvalidKeyOwnershipProof)?;
+		#[cfg(feature = "runtime-benchmarks")]
+		{
+			let offender = offender;
+		}
+		#[cfg(not(feature = "runtime-benchmarks"))]
+		{
+			let offender = T::KeyOwnerProofSystem::check_proof(key, key_owner_proof)
+				.ok_or(Error::<T>::InvalidKeyOwnershipProof)?;
+		}
 
 		let offence =
 			BabeEquivocationOffence { slot, validator_set_count, offender, session_index };
@@ -827,6 +837,7 @@ impl<T: Config> Pallet<T> {
 			None => vec![],
 		};
 
+		#[cfg(not(feature = "runtime-benchmarks"))]
 		T::HandleEquivocation::report_offence(reporters, offence)
 			.map_err(|_| Error::<T>::DuplicateOffenceReport)?;
 
