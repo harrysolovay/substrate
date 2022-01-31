@@ -25,19 +25,26 @@ sp-application-crypto = { version = "4.0.0", default-features = false, path = ".
 sp-consensus-babe = { version = "0.10.0-dev", default-features = false, path = "../../primitives/consensus/babe" }
 sp-consensus-vrf = { version = "0.10.0-dev", default-features = false, path = "../../primitives/consensus/vrf" }
 sp-io = { version = "4.0.0", default-features = false, path = "../../primitives/io" }
+sp-core = { version = "4.1.0-dev", default-features = false, path = "../../primitives/core" }
 sp-runtime = { version = "4.1.0-dev", default-features = false, path = "../../primitives/runtime" }
 sp-session = { version = "4.0.0-dev", default-features = false, path = "../../primitives/session" }
 sp-staking = { version = "4.0.0-dev", default-features = false, path = "../../primitives/staking" }
 sp-std = { version = "4.0.0", default-features = false, path = "../../primitives/std" }
 log = { version = "0.4.14", default-features = false }
 
+
+pallet-staking = { version = "4.0.0-dev", path = "../staking", default-features = false, optional = true }
+pallet-balances = { version = "4.0.0-dev", path = "../balances", default-features = false, optional = true }
+frame-election-provider-support = { version = "4.0.0-dev", path = "../election-provider-support", default-features = false, optional = true }
+pallet-staking-reward-curve = { version = "4.0.0-dev", path = "../staking/reward-curve", default-features = false, optional = true }
+pallet-offences = { version = "4.0.0-dev", path = "../offences", default-features = false, optional = true }
+
 [dev-dependencies]
 pallet-balances = { version = "4.0.0-dev", path = "../balances" }
-pallet-offences = { version = "4.0.0-dev", path = "../offences" }
-pallet-staking = { version = "4.0.0-dev", path = "../staking" }
-pallet-staking-reward-curve = { version = "4.0.0-dev", path = "../staking/reward-curve" }
+pallet-session = { version = "4.0.0-dev", path = "../session" }
 sp-core = { version = "4.1.0-dev", path = "../../primitives/core" }
-frame-election-provider-support = { version = "4.0.0-dev", path = "../election-provider-support" }
+sp-std = { version = "4.0.0", path = "../../primitives/std" }
+sp-io = { version = "4.0.0", path = "../../primitives/io" }
 
 [features]
 default = ["std"]
@@ -60,5 +67,7 @@ std = [
 	"sp-std/std",
 	"log/std",
 ]
-runtime-benchmarks = ["frame-benchmarking/runtime-benchmarks"]
+runtime-benchmarks = ["frame-benchmarking/runtime-benchmarks",
+"pallet-staking/runtime-benchmarks", "pallet-balances/runtime-benchmarks", "frame-election-provider-support/runtime-benchmarks", "pallet-staking-reward-curve",
+"pallet-offences/runtime-benchmarks", "sp-runtime/runtime-benchmarks",]
 try-runtime = ["frame-support/try-runtime"]

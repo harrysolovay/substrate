@@ -49,12 +49,14 @@ use sp_consensus_vrf::schnorrkel;
 
 pub use sp_consensus_babe::{AuthorityId, PUBLIC_KEY_LENGTH, RANDOMNESS_LENGTH, VRF_OUTPUT_LENGTH};
 
-mod default_weights;
+pub mod default_weights;
 mod equivocation;
 mod randomness;
 
-#[cfg(any(feature = "runtime-benchmarks", test))]
+#[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
+//#[cfg(feature = "runtime-benchmarks")]
+//#mod bench_mock;
 #[cfg(all(feature = "std", test))]
 mod mock;
 #[cfg(all(feature = "std", test))]
@@ -69,7 +71,21 @@ pub use pallet::*;
 
 pub trait WeightInfo {
 	fn plan_config_change() -> Weight;
+	fn do_report_equivocation(validator_count: u32) -> Weight;
 	fn report_equivocation(validator_count: u32) -> Weight;
+}
+
+// TODO remove
+impl WeightInfo for () {
+	fn plan_config_change() -> Weight {
+		0 as Weight
+	}
+	fn do_report_equivocation(validator_count: u32) -> Weight {
+		0 as Weight
+	}
+	fn report_equivocation(validator_count: u32) -> Weight {
+		0 as Weight
+	}
 }
 
 /// Trigger an epoch change, if any should take place.

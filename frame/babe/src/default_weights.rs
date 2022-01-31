@@ -22,13 +22,20 @@ use frame_support::weights::{
 	constants::{RocksDbWeight as DbWeight, WEIGHT_PER_MICROS, WEIGHT_PER_NANOS},
 	Weight,
 };
+use sp_std::marker::PhantomData;
+use crate::equivocation::HandleEquivocation;
 
-impl crate::WeightInfo for () {
+pub struct SubstrateWeight<T>(PhantomData<T>);
+impl<T: crate::Config> crate::WeightInfo for SubstrateWeight<T> {
 	fn plan_config_change() -> Weight {
 		DbWeight::get().writes(1)
 	}
 
 	fn report_equivocation(validator_count: u32) -> Weight {
+		Self::do_report_equivocation(validator_count).saturating_add(T::HandleEquivocation::report_offence_weight(123))
+	}
+
+	fn do_report_equivocation(validator_count: u32) -> Weight {
 		// we take the validator set count from the membership proof to
 		// calculate the weight but we set a floor of 100 validators.
 		let validator_count = validator_count.max(100) as u64;

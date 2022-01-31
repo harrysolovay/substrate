@@ -17,12 +17,43 @@
 
 //! Benchmarks for the BABE Pallet.
 
+#![cfg(feature = "runtime-benchmarks")]
+
 use super::*;
+use pallet_session::historical::Pallet as Historical;
+use pallet_session::Pallet as Session;
+use pallet_staking::Pallet as Staking;
+use pallet_timestamp::Pallet as Timestamp;
+use frame_system::Pallet as System;
+use crate::Pallet as Babe;
+use sp_core::{
+	U256,
+};
+use frame_support::{traits::OriginTrait, Parameter};
+/*use sp_core::{
+	crypto::{IsWrappedBy, KeyTypeId, Pair},
+};*/
+use sp_consensus_babe::{AuthorityId, Slot};
 use frame_benchmarking::benchmarks;
+use sp_runtime::Digest;
+//use sp_core::Pair;
 
 type Header = sp_runtime::generic::Header<u64, sp_runtime::traits::BlakeTwo256>;
 
 benchmarks! {
+	report_equivocation_unsigned_without_hook {
+		//new_test_ext_with_pairs(3);
+
+		//let a: <crate::Pallet::<T> as frame_support::Pallet>::MockConfig;
+	}: {
+		/*Babe::report_equivocation_unsigned(
+			T::Origin::none(),
+			Box::new(eq_proof),
+			key_owner_proof,
+		)
+		.unwrap();*/
+	}
+
 	check_equivocation_proof {
 		let x in 0 .. 1;
 
@@ -69,31 +100,4 @@ benchmarks! {
 		crate::mock::new_test_ext(3),
 		crate::mock::Test,
 	)
-}
-
-#[cfg(test)]
-mod tests {
-	use super::*;
-	use crate::mock::*;
-
-	#[test]
-	fn test_generate_equivocation_report_blob() {
-		let (pairs, mut ext) = new_test_ext_with_pairs(3);
-
-		let offending_authority_index = 0;
-		let offending_authority_pair = &pairs[0];
-
-		ext.execute_with(|| {
-			start_era(1);
-
-			let equivocation_proof = generate_equivocation_proof(
-				offending_authority_index,
-				offending_authority_pair,
-				CurrentSlot::<Test>::get() + 1,
-			);
-
-			println!("equivocation_proof: {:?}", equivocation_proof);
-			println!("equivocation_proof.encode(): {:?}", equivocation_proof.encode());
-		});
-	}
 }

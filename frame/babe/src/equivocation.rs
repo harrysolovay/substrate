@@ -33,7 +33,7 @@
 //! that the `ValidateUnsigned` for the BABE pallet is used in the runtime
 //! definition.
 
-use frame_support::traits::{Get, KeyOwnerProofSystem};
+use frame_support::{weights::Weight, traits::{Get, KeyOwnerProofSystem}};
 use sp_consensus_babe::{EquivocationProof, Slot};
 use sp_runtime::{
 	transaction_validity::{
@@ -60,6 +60,8 @@ pub trait HandleEquivocation<T: Config> {
 	/// pallet this should be equal to the bonding duration (in blocks, not eras).
 	type ReportLongevity: Get<u64>;
 
+	fn report_offence_weight(n: u32) -> Weight;
+
 	/// Report an offence proved by the given reporters.
 	fn report_offence(
 		reporters: Vec<T::AccountId>,
@@ -81,6 +83,10 @@ pub trait HandleEquivocation<T: Config> {
 
 impl<T: Config> HandleEquivocation<T> for () {
 	type ReportLongevity = ();
+
+	fn report_offence_weight(n: u32) -> Weight {
+		Default::default()
+	}
 
 	fn report_offence(
 		_reporters: Vec<T::AccountId>,
@@ -137,6 +143,10 @@ where
 	L: Get<u64>,
 {
 	type ReportLongevity = L;
+
+	fn report_offence_weight(n: u32) -> Weight {
+		0 as Weight
+	}
 
 	fn report_offence(
 		reporters: Vec<T::AccountId>,
