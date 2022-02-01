@@ -68,16 +68,24 @@ type Header = sp_runtime::generic::Header<u64, sp_runtime::traits::BlakeTwo256>;
 			175, 145, 255, 7, 121, 133
 		];
 
-use frame_support::pallet_prelude::IsType;
+use pallet_session::historical::IdentificationTuple;
+use sp_session::MembershipProof;
+use frame_support::{traits::KeyOwnerProofSystem, pallet_prelude::IsType};
 benchmarks! {
-	where_clause { where <T as pallet::Config>::KeyOwnerProof: From<pallet_session::historical::MembershipProof> }
+	// This makes the benchmark below compile...
+	where_clause { where T: pallet::Config<
+		KeyOwnerProofSystem = Historical<T>,
+		KeyOwnerProof = MembershipProof,
+		KeyOwnerIdentification = IdentificationTuple<T>>
+		+ pallet_session::historical::Config
+	}
 
 	report_equivocation_unsigned_without_hook {
-		let equivocation_proof: sp_consensus_babe::EquivocationProof<T::Header> = Decode::decode(&mut &EQUIVOCATION_PROOF_BLOB[..]).unwrap();
+		let equivocation_proof: sp_consensus_babe::EquivocationProof<T::Header> = Decode::decode(&mut &EQUIVOCATION_PROOF_BLOB[..]).expect("must decode; qed");
 		let offender = equivocation_proof.offender.clone();
 
 		let key = (sp_consensus_babe::KEY_TYPE, offender);
-		let key_owner_proof = Historical::prove(key).unwrap();
+		let key_owner_proof = Historical::<T>::prove(key).expect("must proof; qed");
 	}: {
 		Babe::<T>::report_equivocation_unsigned(
 			T::Origin::none(),

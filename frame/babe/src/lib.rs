@@ -818,10 +818,10 @@ impl<T: Config> Pallet<T> {
 		}
 
 		// check the membership proof and extract the offender's id
-		let key = (sp_consensus_babe::KEY_TYPE, offender);
+		let key = (sp_consensus_babe::KEY_TYPE, offender.clone());
 		#[cfg(feature = "runtime-benchmarks")]
 		{
-			let offender = offender;
+			let offender = offender.clone();
 		}
 		#[cfg(not(feature = "runtime-benchmarks"))]
 		{
