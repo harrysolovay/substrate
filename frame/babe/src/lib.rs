@@ -797,12 +797,9 @@ impl<T: Config> Pallet<T> {
 		let offender = equivocation_proof.offender.clone();
 		let slot = equivocation_proof.slot;
 
-		#[cfg(not(feature = "runtime-benchmarks"))]
-		{
-			// validate the equivocation proof
-			if !sp_consensus_babe::check_equivocation_proof(equivocation_proof) {
-				return Err(Error::<T>::InvalidEquivocationProof.into())
-			}
+		// validate the equivocation proof
+		if !sp_consensus_babe::check_equivocation_proof(equivocation_proof) {
+			return Err(Error::<T>::InvalidEquivocationProof.into())
 		}
 
 		let validator_set_count = key_owner_proof.validator_count();
@@ -814,6 +811,7 @@ impl<T: Config> Pallet<T> {
 		// check that the slot number is consistent with the session index
 		// in the key ownership proof (i.e. slot is for that epoch)
 		if epoch_index != session_index {
+			panic!("{} != {}", epoch_index, session_index);
 			return Err(Error::<T>::InvalidKeyOwnershipProof.into())
 		}
 

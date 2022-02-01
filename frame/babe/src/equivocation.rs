@@ -33,7 +33,10 @@
 //! that the `ValidateUnsigned` for the BABE pallet is used in the runtime
 //! definition.
 
-use frame_support::{weights::Weight, traits::{Get, KeyOwnerProofSystem}};
+use frame_support::{
+	traits::{Get, KeyOwnerProofSystem},
+	weights::Weight,
+};
 use sp_consensus_babe::{EquivocationProof, Slot};
 use sp_runtime::{
 	transaction_validity::{

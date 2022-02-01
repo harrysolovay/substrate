@@ -86,8 +86,8 @@ mod tests {
 		let authorities = crate::tests::test_authorities();
 
 		let equivocation_authority_index = 0;
-		let equivocation_key = &authorities[equivocation_authority_index].0;
-		let equivocation_keyring = extract_keyring(equivocation_key);
+		let equivocation_key = authorities[equivocation_authority_index].0.clone();
+		let equivocation_keyring = extract_keyring(&equivocation_key);
 
 		new_test_ext_raw_authorities(authorities).execute_with(|| {
 			start_era(1);
@@ -102,6 +102,12 @@ mod tests {
 
 			println!("equivocation_proof: {:?}", equivocation_proof);
 			println!("equivocation_proof.encode(): {:?}", equivocation_proof.encode());
+
+			let key = (sp_finality_grandpa::KEY_TYPE, &equivocation_key);
+			let key_owner_proof = Historical::prove(key).expect("must prove; qed");
+
+			println!("key_owner_proof: {:?}", key_owner_proof);
+			println!("key_owner_proof.encode(): {:?}", key_owner_proof.encode());
 		});
 	}
 }

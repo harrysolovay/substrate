@@ -32,10 +32,10 @@ use sp_runtime::{
 };
 use sp_staking::offence::{Offence, ReportOffence};
 
+use crate::{Config as OffencesConfig, Pallet as Offences};
 use pallet_balances::Config as BalancesConfig;
 use pallet_grandpa::{GrandpaEquivocationOffence, GrandpaTimeSlot};
 use pallet_im_online::{Config as ImOnlineConfig, Pallet as ImOnline, UnresponsivenessOffence};
-use crate::{Config as OffencesConfig, Pallet as Offences};
 use pallet_session::{
 	historical::{Config as HistoricalConfig, IdentificationTuple},
 	Config as SessionConfig, SessionManager,
@@ -236,9 +236,7 @@ pub struct MockOffence<Offender> {
 	pub offender: Offender,
 }
 
-impl<Offender: Clone> sp_staking::offence::Offence<Offender>
-	for MockOffence<Offender>
-{
+impl<Offender: Clone> sp_staking::offence::Offence<Offender> for MockOffence<Offender> {
 	const ID: Kind = *b"mock:equivocatio";
 	type TimeSlot = u64;
 

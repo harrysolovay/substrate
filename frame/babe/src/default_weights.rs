@@ -18,12 +18,12 @@
 //! Default weights for the Babe Pallet
 //! This file was not auto-generated.
 
+use crate::equivocation::HandleEquivocation;
 use frame_support::weights::{
 	constants::{RocksDbWeight as DbWeight, WEIGHT_PER_MICROS, WEIGHT_PER_NANOS},
 	Weight,
 };
 use sp_std::marker::PhantomData;
-use crate::equivocation::HandleEquivocation;
 
 pub struct SubstrateWeight<T>(PhantomData<T>);
 impl<T: crate::Config> crate::WeightInfo for SubstrateWeight<T> {
@@ -32,7 +32,8 @@ impl<T: crate::Config> crate::WeightInfo for SubstrateWeight<T> {
 	}
 
 	fn report_equivocation(validator_count: u32) -> Weight {
-		Self::do_report_equivocation(validator_count).saturating_add(T::HandleEquivocation::report_offence_weight(123))
+		Self::do_report_equivocation(validator_count)
+			.saturating_add(T::HandleEquivocation::report_offence_weight(123))
 	}
 
 	fn do_report_equivocation(validator_count: u32) -> Weight {

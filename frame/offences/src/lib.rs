@@ -22,16 +22,16 @@
 // Ensure we're `no_std` when compiling for Wasm.
 #![cfg_attr(not(feature = "std"), no_std)]
 
-#[cfg(feature = "runtime-benchmarks")]
-pub mod benchmarking;
 #[cfg(test)]
 mod bench_mock;
+#[cfg(feature = "runtime-benchmarks")]
+pub mod benchmarking;
+pub mod migration;
 #[cfg(test)]
 mod mock;
 #[cfg(test)]
 mod tests;
 pub mod weights;
-pub mod migration;
 
 use codec::{Decode, Encode};
 use frame_support::weights::Weight;
